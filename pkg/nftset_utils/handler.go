@@ -26,6 +26,7 @@ import (
 	"github.com/google/nftables"
 	"go4.org/netipx"
 	"net/netip"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -84,6 +85,9 @@ func (h *NftSetHandler) getSet() (*nftables.Set, error) {
 
 // AddElems adds SetIPElem(s) to set in a single batch.
 func (h *NftSetHandler) AddElems(es ...netip.Prefix) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
 	set, err := h.getSet()
 	if err != nil {
 		return fmt.Errorf("failed to get set, %w", err)
